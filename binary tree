@@ -1,0 +1,65 @@
+// Definition for a binary tree node.
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    TreeNode(int val) { 
+        this.val = val; 
+    }
+}
+
+public class InvertBinaryTree {
+
+    public static TreeNode invertTree(TreeNode root) {
+        // Base case: if the tree is empty or we reach a leaf's child
+        if (root == null) {
+            return null;
+        }
+
+        // Swap the left and right children
+        TreeNode temp = root.left;
+        root.left = root.right;
+        root.right = temp;
+
+        // Recursively invert the left and right subtrees
+        invertTree(root.left);
+        invertTree(root.right);
+
+        return root;
+    }
+
+    // Helper method to print the tree in pre-order to verify the inversion
+    public static void printPreOrder(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        System.out.print(node.val + " ");
+        printPreOrder(node.left);
+        printPreOrder(node.right);
+    }
+
+    public static void main(String[] args) {
+      
+        
+        TreeNode root = new TreeNode(4);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(7);
+        root.left.left = new TreeNode(1);
+        root.left.right = new TreeNode(3);
+        root.right.left = new TreeNode(6);
+        root.right.right = new TreeNode(9);
+
+        System.out.print("Original Tree (Pre-order): ");
+        printPreOrder(root);
+        System.out.println();
+
+        // Invert the tree
+        root = invertTree(root);
+
+        // Expected output after inversion: 4 7 9 6 2 3 1
+        System.out.print("Inverted Tree (Pre-order): ");
+        printPreOrder(root);
+        System.out.println();
+    }
+}
