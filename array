@@ -1,0 +1,100 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        FastScanner sc = new FastScanner();
+        int t = sc.nextInt();
+        
+        StringBuilder out = new StringBuilder();
+        // Pre-allocate the events array to avoid GC overhead inside the loop
+        long[] events = new long[5005];
+        
+        while (t-- > 0) {
+            int n = sc.nextInt();
+            long[] a = new long[n];
+            
+            for (int i = 0; i < n; i++) {
+                a[i] = sc.nextLong();
+            }
+            
+            for (int i = 0; i < n; i++) {
+                int baseCount = 0;
+                int numEvents = 0;
+                
+                for (int j = i + 1; j < n; j++) {
+                    if (a[i] > a[j]) {
+                        baseCount++;
+                        // k <= U
+                        long U = Math.floorDiv(a[i] + a[j] - 1, 2);
+                        int pos = (int)(U + 1);
+                        
+                        // Pack position (top 32 bits) and weight -1 (bottom 32 bits)
+                        events[numEvents++] = ((long)pos << 32) | (-1 & 0xFFFFFFFFL);
+                        
+                    } else if (a[i] < a[j]) {
+                        // k >= L
+                        long L = Math.floorDiv(a[i] + a[j], 2) + 1;
+                        int pos = (int)L;
+                        
+                        // Pack position (top 32 bits) and weight +1 (bottom 32 bits)
+                        events[numEvents++] = ((long)pos << 32) | (1 & 0xFFFFFFFFL);
+                    }
+                }
+                
+                // Sort primitive array for massive speed improvements
+                Arrays.sort(events, 0, numEvents);
+                
+                int currentCount = baseCount;
+                int maxCount = currentCount;
+                
+                // Sweep line processing
+                for (int m = 0; m < numEvents; ) {
+                    int currentPos = (int)(events[m] >> 32);
+                    
+                    // Accumulate all weights occurring at the exact same position
+                    while (m < numEvents && (int)(events[m] >> 32) == currentPos) {
+                        currentCount += (int)events[m]; // extracts the lower 32-bit weight
+                        m++;
+                    }
+                    maxCount = Math.max(maxCount, currentCount);
+                }
+                
+                out.append(maxCount).append(i == n - 1 ? "" : " ");
+            }
+            out.append("\n");
+        }
+        System.out.print(out);
+    }
+
+    // Standard Fast I/O class for competitive programming
+    static class FastScanner {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastScanner() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    String line = br.readLine();
+                    if (line == null) return null;
+                    st = new StringTokenizer(line);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+    }
+}
