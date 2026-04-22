@@ -1,0 +1,26 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        
+        if (!sc.hasNextInt()) return;
+        int t = sc.nextInt();
+        
+        // Using StringBuilder for fast I/O
+        StringBuilder out = new StringBuilder();
+        
+        while (t-- > 0) {
+            int n = sc.nextInt();
+            
+            // Simply append numbers from n down to 1
+            for (int i = n; i >= 1; i--) {
+                out.append(i).append(i == 1 ? "" : " ");
+            }
+            out.append("\n");
+        }
+        
+        System.out.print(out);
+        sc.close();
+    }
+}
