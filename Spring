@@ -1,0 +1,100 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+
+    // Helper method to calculate Greatest Common Divisor
+    static long gcd(long a, long b) {
+        while (b != 0) {
+            long temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    // Helper method to calculate Least Common Multiple safely
+    static long lcm(long a, long b) {
+        if (a == 0 || b == 0) return 0;
+        long g = gcd(a, b);
+        long a_g = a / g;
+        
+        // Prevent overflow just in case
+        if (Long.MAX_VALUE / a_g < b) {
+            return Long.MAX_VALUE; 
+        }
+        return a_g * b;
+    }
+
+    public static void main(String[] args) throws IOException {
+        FastScanner sc = new FastScanner();
+        int t = sc.nextInt();
+        
+        StringBuilder out = new StringBuilder();
+        
+        while (t-- > 0) {
+            long a = sc.nextLong();
+            long b = sc.nextLong();
+            long c = sc.nextLong();
+            long m = sc.nextLong();
+            
+            // Total independent visits
+            long vA = m / a;
+            long vB = m / b;
+            long vC = m / c;
+            
+            // Shared visits using LCM
+            long lcmAB = lcm(a, b);
+            long lcmAC = lcm(a, c);
+            long lcmBC = lcm(b, c);
+            long lcmABC = lcm(lcmAB, c);
+            
+            long vAB = (lcmAB == Long.MAX_VALUE) ? 0 : (m / lcmAB);
+            long vAC = (lcmAC == Long.MAX_VALUE) ? 0 : (m / lcmAC);
+            long vBC = (lcmBC == Long.MAX_VALUE) ? 0 : (m / lcmBC);
+            long vABC = (lcmABC == Long.MAX_VALUE) ? 0 : (m / lcmABC);
+            
+            // Simplified Inclusion-Exclusion Formulas
+            long waterAlice = 6 * vA - 3 * vAB - 3 * vAC + 2 * vABC;
+            long waterBob   = 6 * vB - 3 * vAB - 3 * vBC + 2 * vABC;
+            long waterCarol = 6 * vC - 3 * vAC - 3 * vBC + 2 * vABC;
+            
+            out.append(waterAlice).append(" ")
+               .append(waterBob).append(" ")
+               .append(waterCarol).append("\n");
+        }
+        
+        System.out.print(out);
+    }
+
+    // Fast I/O Template
+    static class FastScanner {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastScanner() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    String line = br.readLine();
+                    if (line == null) return null;
+                    st = new StringTokenizer(line);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+
+        long nextLong() {
+            return Long.parseLong(next());
+        }
+    }
+}
