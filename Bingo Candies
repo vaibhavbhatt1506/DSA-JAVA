@@ -1,0 +1,66 @@
+import java.io.*;
+import java.util.*;
+
+public class MagicBoard {
+    public static void main(String[] args) throws IOException {
+        FastScanner sc = new FastScanner();
+        int t = sc.nextInt();
+        
+        StringBuilder out = new StringBuilder();
+        
+        while (t-- > 0) {
+            int n = sc.nextInt();
+            
+            // The maximum possible color ID is n^2
+            int[] colorCount = new int[n * n + 1];
+            int maxFreq = 0;
+            
+            // Read the grid and count color frequencies
+            for (int i = 0; i < n * n; i++) {
+                int color = sc.nextInt();
+                colorCount[color]++;
+                
+                // Keep track of the most frequent color
+                if (colorCount[color] > maxFreq) {
+                    maxFreq = colorCount[color];
+                }
+            }
+            
+            // Apply the Pigeonhole logic
+            if (maxFreq <= (n * n - n)) {
+                out.append("YES\n");
+            } else {
+                out.append("NO\n");
+            }
+        }
+        
+        System.out.print(out);
+    }
+
+    // Standard Fast I/O class to prevent Time Limit Exceeded (TLE)
+    static class FastScanner {
+        BufferedReader br;
+        StringTokenizer st;
+
+        public FastScanner() {
+            br = new BufferedReader(new InputStreamReader(System.in));
+        }
+
+        String next() {
+            while (st == null || !st.hasMoreElements()) {
+                try {
+                    String line = br.readLine();
+                    if (line == null) return null;
+                    st = new StringTokenizer(line);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return st.nextToken();
+        }
+
+        int nextInt() {
+            return Integer.parseInt(next());
+        }
+    }
+}
