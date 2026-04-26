@@ -1,0 +1,39 @@
+import java.util.Arrays;
+
+public class CoinChange {
+
+    public static int coinChange(int[] coins, int amount) {
+        // The maximum possible coins we could use is 'amount' (using all 1s).
+        // So 'amount + 1' acts as our safe "infinity" value.
+        int max = amount + 1;
+        int[] dp = new int[amount + 1];
+        
+        // Fill the array with our "infinity"
+        Arrays.fill(dp, max);
+        
+        // Base case: 0 coins needed to make amount 0
+        dp[0] = 0;
+
+        // Calculate DP for every amount from 1 to the target amount
+        for (int i = 1; i <= amount; i++) {
+            for (int coin : coins) {
+                // If we can use this coin to help build the amount 'i'
+                if (coin <= i) {
+                    // Update the minimum coins needed for amount 'i'
+                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+                }
+            }
+        }
+
+        // If dp[amount] is still greater than amount, it means it's impossible
+        return dp[amount] > amount ? -1 : dp[amount];
+    }
+
+    public static void main(String[] args) {
+        int[] coins = {1, 2, 5};
+        int amount = 11;
+
+        int minCoins = coinChange(coins, amount);
+        System.out.println("Minimum coins needed to make " + amount + " is: " + minCoins);
+    }
+}
