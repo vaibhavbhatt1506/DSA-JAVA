@@ -14,7 +14,7 @@ This space is dedicated to my daily grind of solving algorithmic problems, maste
 * **Tools:** Standard Java Collections Framework
 
 ## 📂 Repository Structure
-The repository is organized by data structure and topic to make navigation easy:
+The repository is organized by data structure and topic to make the navigation easy:
 
 ```text
 📦 Daily-DSA-Practice
