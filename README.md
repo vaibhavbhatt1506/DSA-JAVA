@@ -11,7 +11,7 @@ This space is dedicated to my daily grind of solving algorithmic problems, maste
 
 ## 🛠️ Tech Stack
 * **Language:** Java (Primary)
-* **Tools:** Standard Java Collections Framework
+* **Tools:** Standard Java Collections Framework.
 
 ## 📂 Repository Structure
 The repository is organized by data structure and topic to make the navigation easy:
