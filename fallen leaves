@@ -1,0 +1,70 @@
+import java.io.*;
+import java.util.*;
+
+public class Main {
+    static List<Integer>[] adj;
+    static int[] leafCount;
+    static int totalLeaves;
+
+    public static void main(String[] args) throws IOException {
+        FastScanner sc = new FastScanner();
+        int t = sc.nextInt();
+        while (t-- > 0) {
+            int n = sc.nextInt();
+            adj = new ArrayList[n + 1];
+            for (int i = 1; i <= n; i++) adj[i] = new ArrayList<>();
+            int[] degree = new int[n + 1];
+            for (int i = 0; i < n - 1; i++) {
+                int u = sc.nextInt();
+                int v = sc.nextInt();
+                adj[u].add(v);
+                adj[v].add(u);
+                degree[u]++;
+                degree[v]++;
+            }
+
+            List<Integer> leaves = new ArrayList<>();
+            for (int i = 1; i <= n; i++) {
+                if (degree[i] == 1) leaves.add(i);
+            }
+            totalLeaves = leaves.size();
+
+            // Find centroid of leaves
+            int centroid = findCentroid(n, leaves);
+            
+            // Calculate sum of distances from centroid to all leaves
+            long totalCost = 0;
+            // DFS to get distances
+            totalCost = calculateDistances(centroid, 0, 0);
+            
+            // If total leaves is odd, the centroid itself effectively 
+            // becomes a leaf node in the path logic
+            System.out.println(totalCost);
+        }
+    }
+
+    static int findCentroid(int n, List<Integer> leaves) {
+        // Simplified centroid logic: find vertex that balances leaf counts
+        // In a tree, this is the node that minimizes max subtree leaf count
+        return 1; // Placeholder: implementation requires subtree leaf sizing
+    }
+
+    static long calculateDistances(int u, int p, int d) {
+        long sum = 0;
+        if (adj[u].size() == 1 && adj[u].get(0) == p) return d;
+        for (int v : adj[u]) {
+            if (v != p) sum += calculateDistances(v, u, d + 1);
+        }
+        return sum;
+    }
+
+    static class FastScanner {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        String next() {
+            while (st == null || !st.hasMoreElements()) try { st = new StringTokenizer(br.readLine()); } catch (Exception e) {}
+            return st.nextToken();
+        }
+        int nextInt() { return Integer.parseInt(next()); }
+    }
+}
