@@ -1,0 +1,81 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class NQueens {
+
+    public static List<List<String>> solveNQueens(int n) {
+        List<List<String>> solutions = new ArrayList<>();
+        char[][] board = new char[n][n];
+        
+        // Initialize empty board with '.'
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] = '.';
+            }
+        }
+        
+        // Start backtracking from row 0
+        backtrack(solutions, board, 0, n);
+        return solutions;
+    }
+
+    private static void backtrack(List<List<String>> solutions, char[][] board, int row, int n) {
+        // Base case: If we've reached row n, we placed all queens successfully
+        if (row == n) {
+            solutions.add(constructBoard(board));
+            return;
+        }
+
+        // Try placing a queen in every column of the current row
+        for (int col = 0; col < n; col++) {
+            if (isSafe(board, row, col, n)) {
+                // 1. Choose: Place the queen
+                board[row][col] = 'Q';
+                
+                // 2. Explore: Move to the next row
+                backtrack(solutions, board, row + 1, n);
+                
+                // 3. Un-choose (BACKTRACK): Remove the queen to try the next column
+                board[row][col] = '.';
+            }
+        }
+    }
+
+    private static boolean isSafe(char[][] board, int row, int col, int n) {
+        // Check column (above current row)
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q') return false;
+        }
+        // Check upper-left diagonal
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q') return false;
+        }
+        // Check upper-right diagonal
+        for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+            if (board[i][j] == 'Q') return false;
+        }
+        // We don't need to check below the current row because we haven't placed queens there yet
+        return true;
+    }
+
+    private static List<String> constructBoard(char[][] board) {
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < board.length; i++) {
+            res.add(new String(board[i]));
+        }
+        return res;
+    }
+
+    public static void main(String[] args) {
+        int n = 4;
+        List<List<String>> results = solveNQueens(n);
+        
+        System.out.println("Number of solutions for N=" + n + ": " + results.size());
+        for (List<String> solution : results) {
+            for (String row : solution) {
+                System.out.println(row);
+            }
+            System.out.println();
+        }
+    }
+}
