@@ -1,0 +1,57 @@
+import java.util.*;
+
+public class CourseSchedule {
+
+    public static boolean canFinish(int numCourses, int[][] prerequisites) {
+        // Step 1: Build the graph and in-degree array
+        List<List<Integer>> adj = new ArrayList<>();
+        int[] inDegree = new int[numCourses];
+        
+        for (int i = 0; i < numCourses; i++) {
+            adj.add(new ArrayList<>());
+        }
+        
+        for (int[] pre : prerequisites) {
+            int course = pre[0];
+            int prereq = pre[1];
+            adj.get(prereq).add(course);
+            inDegree[course]++;
+        }
+        
+        // Step 2: Add all courses with 0 in-degree to a queue
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        
+        // Step 3: Process the queue (Kahn's Algorithm)
+        int coursesTaken = 0;
+        
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            coursesTaken++;
+            
+            // Reduce in-degree for all neighboring courses
+            for (int neighbor : adj.get(current)) {
+                inDegree[neighbor]--;
+                // If in-degree becomes 0, we can now take this course
+                if (inDegree[neighbor] == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+        
+        // Step 4: If we took all courses, return true
+        return coursesTaken == numCourses;
+    }
+
+    public static void main(String[] args) {
+        int numCourses = 4;
+        int[][] prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+        
+        System.out.println("Can finish courses? " + canFinish(numCourses, prerequisites)); 
+        // Output: true
+    }
+}
