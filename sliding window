@@ -1,0 +1,36 @@
+import java.util.HashSet;
+import java.util.Set;
+
+public class LongestSubstring {
+
+    public static int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) return 0;
+
+        int left = 0;
+        int maxLen = 0;
+        // Set to store unique characters in the current window
+        Set<Character> set = new HashSet<>();
+
+        for (int right = 0; right < s.length(); right++) {
+            char currentChar = s.charAt(right);
+
+            // If we find a duplicate, shrink the window from the left
+            while (set.contains(currentChar)) {
+                set.remove(s.charAt(left));
+                left++;
+            }
+
+            // Add the new unique character and update maxLen
+            set.add(currentChar);
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+
+        return maxLen;
+    }
+
+    public static void main(String[] args) {
+        String test = "pwwkew";
+        System.out.println("String: " + test);
+        System.out.println("Length of longest unique substring: " + lengthOfLongestSubstring(test));
+    }
+}
