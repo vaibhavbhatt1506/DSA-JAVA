@@ -1,0 +1,19 @@
+class Solution {
+    public int removeDuplicates(int[] nums) {
+        if (nums.length == 0) return 0;
+        
+        // 'i' tracks the position of the last unique element found
+        int i = 0;
+        
+        // 'j' explores the rest of the array
+        for (int j = 1; j < nums.length; j++) {
+            if (nums[j] != nums[i]) {
+                i++;
+                nums[i] = nums[j];
+            }
+        }
+        
+        // Total unique elements
+        return i + 1;
+    }
+}
