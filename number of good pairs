@@ -1,0 +1,21 @@
+import java.util.HashMap;
+
+class Solution {
+    public int numIdenticalPairs(int[] nums) {
+        HashMap<Integer, Integer> countMap = new HashMap<>();
+        int goodPairs = 0;
+        
+        for (int num : nums) {
+            // Get how many times we've seen 'num' so far (default to 0)
+            int currentCount = countMap.getOrDefault(num, 0);
+            
+            // Add that count to our total good pairs
+            goodPairs += currentCount;
+            
+            // Update the map with the new frequency
+            countMap.put(num, currentCount + 1);
+        }
+        
+        return goodPairs;
+    }
+}
