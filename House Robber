@@ -1,0 +1,24 @@
+public class Solution {
+    public int rob(int[] nums) {
+        // Edge cases
+        if (nums == null || nums.length == 0) return 0;
+        if (nums.length == 1) return nums[0];
+        
+        // Tracks max money if we skipped the previous house (2 houses back)
+        int prev2 = 0; 
+        // Tracks max money up to the immediate previous house (1 house back)
+        int prev1 = 0; 
+        
+        // Iterate through each house in the street
+        for (int num : nums) {
+            // Formula: max(rob current house + 2 houses ago, skip current house)
+            int currentMax = Math.max(num + prev2, prev1);
+            
+            // Slide our state variables forward for the next iteration
+            prev2 = prev1;
+            prev1 = currentMax;
+        }
+        
+        return prev1;
+    }
+}
