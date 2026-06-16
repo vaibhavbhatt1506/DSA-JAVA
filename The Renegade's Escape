@@ -1,0 +1,58 @@
+import heapq
+
+def renegade_escape(n, edges, start, exit_node):
+    # Build incoming adjacency list (backward graph)
+    # Graph format: adj[v] = [(u, weight)] meaning directed edge u -> v
+    adj = {i: [] for i in range(n)}
+    for u, v, w in edges:
+        adj[v].append((u, w))
+        
+    # dist[u][0] = min cost from u to exit if EMP NOT used yet
+    # dist[u][1] = min cost from u to exit if EMP ALREADY used
+    dist = [[float('inf')] * 2 for _ in range(n)]
+    
+    # Base cases: At the exit, remaining cost is 0
+    dist[exit_node][0] = 0
+    dist[exit_node][1] = 0
+    
+    # Priority Queue stores: (cost, vertex, emp_state)
+    pq = [(0, exit_node, 0), (0, exit_node, 1)]
+    
+    while pq:
+        d, u, state = heapq.heappop(pq)
+        
+        if d > dist[u][state]:
+            continue
+            
+        for u_prev, w in adj[u]:
+            if state == 1:
+                # EMP already used downstream, standard edge cost applies
+                new_cost = dist[u][1] + w
+                if new_cost < dist[u_prev][1]:
+                    dist[u_prev][1] = new_cost
+                    heapq.heappush(pq, (new_cost, u_prev, 1))
+            
+            elif state == 0:
+                # EMP not used yet. Guards choose to blast or not to blast.
+                # If they blast: 2*w + cost from u with EMP used
+                # If they don't: w + cost from u with EMP not used
+                # They choose the max to hurt us; we want to minimize this max.
+                worst_case_cost = max(w + dist[u][0], 2 * w + dist[u][1])
+                
+                if worst_case_cost < dist[u_prev][0]:
+                    dist[u_prev][0] = worst_case_cost
+                    heapq.heappush(pq, (worst_case_cost, u_prev, 0))
+                    
+    return dist[start][0]
+
+# --- Example Usage ---
+# Nodes: 0, 1, 2 (Start = 0, Exit = 2)
+# Edges: (0 -> 1, wt=2), (1 -> 2, wt=5), (0 -> 2, wt=10)
+num_nodes = 3
+city_edges = [
+    (0, 1, 2),
+    (1, 2, 5),
+    (0, 2, 10)
+]
+
+print("Guaranteed Min Time:", renegade_escape(num_nodes, city_edges, 0, 2))
