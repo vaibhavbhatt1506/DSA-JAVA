@@ -1,0 +1,81 @@
+from collections import deque
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+def longest_stable_path(root, K):
+    max_len = 0
+    
+    # Deques store tuples: (node_value, depth)
+    max_dq = deque()
+    min_dq = deque()
+    
+    # We keep track of the highest depth (ancestor) that is currently 
+    # valid for our sliding window.
+    def dfs(node, depth, start_depth):
+        nonlocal max_len
+        if not node:
+            return
+        
+        # 1. Maintain Max Deque (decreasing order)
+        while max_dq and max_dq[-1][0] <= node.val:
+            max_dq.pop()
+        max_dq.append((node.val, depth))
+        
+        # 2. Maintain Min Deque (increasing order)
+        while min_dq and min_dq[-1][0] >= node.val:
+            min_dq.pop()
+        min_dq.append((node.val, depth))
+        
+        # 3. Shrink the window from the top if the condition is violated
+        while max_dq[0][0] - min_dq[0][0] > K:
+            # The window's valid start depth must advance past the element 
+            # that is causing the violation
+            if max_dq[0][1] < min_dq[0][1]:
+                start_depth = max_dq[0][1] + 1
+                max_dq.popleft()
+            else:
+                start_depth = min_dq[0][1] + 1
+                min_dq.popleft()
+        
+        # 4. Update global maximum path length
+        current_path_length = depth - start_depth + 1
+        max_len = max(max_len, current_path_length)
+        
+        # 5. Recurse to children
+        dfs(node.left, depth + 1, start_depth)
+        dfs(node.right, depth + 1, start_depth)
+        
+        # 6. Backtrack: Clean up the deques so they don't corrupt sister branches
+        if max_dq and max_dq[-1][1] == depth:
+            max_dq.pop()
+        if min_dq and min_dq[-1][1] == depth:
+            min_dq.pop()
+
+    # Start DFS at root (depth 0, window starting at depth 0)
+    dfs(root, 0, 0)
+    return max_len
+
+# --- Example Setup ---
+#        10 (depth 0)
+#       /  \
+#      13   18 (depth 1)
+#     /
+#    15        (depth 2)
+#   /
+#  22          (depth 3)
+#
+# If K = 6: 
+# Path [10 -> 13 -> 15] is stable because max(15) - min(10) = 5 <= 6. Length = 3.
+# Path [13 -> 15 -> 22] is invalid because 22 - 13 = 9 > 6.
+
+root = TreeNode(10)
+root.left = TreeNode(13)
+root.right = TreeNode(18)
+root.left.left = TreeNode(15)
+root.left.left.left = TreeNode(22)
+
+print("Longest Stable Path Length:", longest_stable_path(root, 6))
