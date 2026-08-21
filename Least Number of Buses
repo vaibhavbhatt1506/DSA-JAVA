@@ -1,0 +1,59 @@
+import java.util.*;
+
+public class BusRoutes {
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        // Edge case: already at the destination
+        if (source == target) return 0;
+        
+        // Map each stop to the list of buses (by index) that pass through it
+        Map<Integer, List<Integer>> stopToBuses = new HashMap<>();
+        for (int busId = 0; busId < routes.length; busId++) {
+            for (int stop : routes[busId]) {
+                stopToBuses.computeIfAbsent(stop, k -> new ArrayList<>()).add(busId);
+            }
+        }
+        
+        // Queue stores the bus IDs for our BFS
+        Queue<Integer> queue = new LinkedList<>();
+        // Track visited buses to avoid cycles and redundant processing
+        Set<Integer> visitedBuses = new HashSet<>();
+        
+        // Start by finding all buses that pick up at the source stop
+        for (int busId : stopToBuses.getOrDefault(source, new ArrayList<>())) {
+            queue.offer(busId);
+            visitedBuses.add(busId);
+        }
+        
+        int numBuses = 1;
+        
+        // Standard BFS level-order traversal
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            
+            for (int i = 0; i < size; i++) {
+                int currentBus = queue.poll();
+                
+                // Check every stop the current bus visits
+                for (int stop : routes[currentBus]) {
+                    // If this bus visits our target, we are done
+                    if (stop == target) {
+                        return numBuses;
+                    }
+                    
+                    // Add all unvisited buses that pass through this stop to the queue
+                    for (int nextBus : stopToBuses.getOrDefault(stop, new ArrayList<>())) {
+                        if (!visitedBuses.contains(nextBus)) {
+                            visitedBuses.add(nextBus);
+                            queue.offer(nextBus);
+                        }
+                    }
+                }
+            }
+            // Increment the number of buses taken as we move to the next BFS level
+            numBuses++;
+        }
+        
+        // Target is unreachable
+        return -1;
+    }
+}
